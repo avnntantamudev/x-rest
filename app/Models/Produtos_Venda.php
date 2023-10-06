@@ -11,6 +11,7 @@ class Produtos_Venda extends Model
     protected $fillable = [
         'venda_id',
         'artigo',
+        'descricao',
         'preco',
         'quantidade',
     ];

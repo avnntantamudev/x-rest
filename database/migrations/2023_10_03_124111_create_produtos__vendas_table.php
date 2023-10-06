@@ -21,6 +21,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('venda_id');
             $table->string('artigo');
+            $table->string('descricao');
+            $table->string('cod_documento');
             $table->integer('preco');
             $table->integer('quantidade');
             $table->timestamps();

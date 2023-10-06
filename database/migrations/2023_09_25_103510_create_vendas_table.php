@@ -18,11 +18,12 @@ return new class extends Migration
             $table->id();
             $table->integer('cliente_id');
             $table->integer('preco_total');
-            $table->integer('troco');
-            $table->integer('valor_entregue');
-            $table->string('forma_pagamento');
+            $table->integer('troco')->nullable();
+            $table->integer('valor_entregue')->nullable();
+            $table->string('forma_pagamento')->nullable();
             $table->string('nome_cliente');
             $table->string('contribuente');
+            $table->string('cod_documento')->nullable();
             $table->timestamps();
         });
     }

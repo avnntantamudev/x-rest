@@ -30,6 +30,7 @@
                                     <th contenteditable="true">Cod. Venda</th>
                                     <th>Cliente</th>
                                     <th>Contribuente</th>
+                                    <th hidden>Forma de Pagamento</th>
                                     <th>Forma de Pagamento</th>
                                     <th>Valor Total</th>
                                     <th>Valor Entregue</th>
@@ -42,6 +43,7 @@
                                     <tr>
                                         <td>{{$venda->id}}</td>
                                         <td>{{$venda->nome_cliente}}</td>
+                                        <td hidden>{{$venda->cod_documento}}</td>
                                         <td>{{$venda->contribuente}}</td>
                                         <td>{{$venda->forma_pagamento}}</td>
                                         <td>{{$venda->preco_total}}.00kz</td>

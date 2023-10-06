@@ -16,6 +16,7 @@ class Vendas extends Model
         'troco',
         'cliente',
         'contribuente',
+        'cod_documento'
     ];
 
     public function cliente()

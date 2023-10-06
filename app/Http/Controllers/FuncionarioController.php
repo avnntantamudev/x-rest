@@ -15,6 +15,7 @@ use App\Models\Vendas;
 use App\Models\Produtos_Venda;
 use App\Models\Registo_venda;
 use App\Models\stock;
+use App\Models\documento;
 use Barryvdh\DomPDF\Facade\Pdf;
 class FuncionarioController extends Controller
 {
@@ -28,8 +29,9 @@ class FuncionarioController extends Controller
     }
     public function documento(){ 
         $artigos = Artigo::get()->all();
+        $documentos = documento::get()->all();
         $entidades = Cliente::get()->all();
-        return view('funcionario.documento',compact('entidades','artigos'));
+        return view('funcionario.documento',compact('entidades','artigos','documentos'));
     } 
     public function artigo(){
         $familias = familiaArtigo::get()->all();
@@ -222,8 +224,10 @@ class FuncionarioController extends Controller
     public function select(Request $request){
         $entidades = Cliente::get()->all();
         $artigos = Artigo::get()->all();
+        $documentos = documento::get()->all();
+        $doc = documento::find($request->id_documento);
         $cliente = Cliente::find($request->id_cliente);
-        return view('funcionario.documento',compact('cliente','entidades','artigos'));
+        return view('funcionario.documento',compact('cliente','entidades','artigos','doc','documentos'));
 
     }
     public function finalizarCompra(Request $request){
@@ -264,7 +268,7 @@ class FuncionarioController extends Controller
     public function finalizarComprapdf(Request $request){
 
         $data = $request->json()->all(); 
-        $produtoos = $data['produtos'];
+         $produtoos = $data['produtos'];
 
         foreach($produtoos as $produto){
             $dataa=[
@@ -277,6 +281,7 @@ class FuncionarioController extends Controller
                 'cliente_id' => $produto['id_cliente'],
                 'id' => $produto['id'],
                 'quantidade' => $produto['quantidade'],
+                'cod_documento' => $produto['cod_documento'],
             ];
             //FAzendo o debito no stock
             $artigo = artigo::find($produto['id'])->first();
@@ -298,11 +303,13 @@ class FuncionarioController extends Controller
             $venda->forma_pagamento = $dataa['forma_pagamento'];
             $venda->contribuente = $dataa['contribuente'];
             $venda->nome_cliente = $dataa['cliente'];
+            $venda->cod_documento = $dataa['cod_documento'];
             $venda->save();
 
             foreach($produtoos as $produto){
                 $produtov = new Produtos_Venda();
                 $produtov->artigo = $produto['nome'];
+                $produtov->descricao = $produto['descricao'];
                 $produtov->preco = $produto['preco'];
                 $produtov->quantidade = $produto['quantidade'];
                 $produtov->venda_id = $venda->id;
