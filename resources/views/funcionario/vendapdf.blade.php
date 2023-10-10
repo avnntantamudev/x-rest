@@ -39,74 +39,91 @@
         h3 {
             text-align: center;
         }
+
+        #total {
+            float: left;
+        }
     </style>
 </head>
 
 <body>
-    <?php
-    
-    ?>
     <hr>
     <h2>Exmo(a) {{ $venda->nome_cliente }}</h2>
     <h2>Nif nº {{ $venda->contribuente }}</h2>
     <hr>
     <h2>Factura: {{ $venda->cod_documento }}{{ date('Y') }} / {{ $venda->id }}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data/Hora:</th>
-                        <th>Modo de Pagamento</th>
-                        <th>Valor Recebido</th>
-                        <th>Troco</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ $venda->created_at }}</td>
-                        <td>{{ $venda->forma_pagamento }}</td>
-                        <td>{{ $venda->valor_entregue }}kz</td>
-                        <td>{{ $venda->troco }}.00kz</td>
+    <table>
+        <thead>
+            <tr>
+                <th>Data/Hora:</th>
+                <th>Modo de Pagamento</th>
+                <th>Valor Recebido</th>
+                <th>Troco</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ $venda->created_at }}</td>
+                <td>{{ $venda->forma_pagamento }}</td>
+                <td>{{ $venda->valor_entregue }}kz</td>
+                <td>{{ $venda->troco }}.00kz</td>
 
-                    </tr>
-                </tbody>
-            </table>
-            <h3>Lista dos produtos vendidos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Artigo</th>
-                        <th>Descricao</th>
-                        <th>Quantidade</th>
-                        <th>Preco</th>
-                        <th>Total Liquido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($produtos as $produto)
-                        <tr>
-                            <td>{{ $produto->artigo }}</td>
-                            <td>{{ $produto->descricao }}</td>
-                            <td>{{ $produto->quantidade }}</td>
-                            <td>{{ $produto->preco }}kz</td>
-                            <td>{{ $produto->preco * $produto->quantidade }}.00kz</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>Lista dos produtos vendidos</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Artigo</th>
+                <th>Descricao</th>
+                <th>Quantidade</th>
+                <th>Preco</th>
+                <th>Total Liquido</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($produtos as $produto)
+                <tr>
+                    <td>{{ $produto->artigo }}</td>
+                    <td>{{ $produto->descricao }}</td>
+                    <td>{{ $produto->quantidade }}</td>
+                    <td>{{ $produto->preco }}kz</td>
+                    <td>{{ $produto->preco * $produto->quantidade }}.00kz</td>
 
-                        </tr>
-                    @endforeach
-                </tbody>
+                </tr>
+            @endforeach
+        </tbody>
 
-                <tbody>
-                    <tr>
-                        <td>Valor Total</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{ $venda->preco_total }}.00kz</td>
+        <tbody>
+            <tr>
+                <td>Valor Total</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ $venda->preco_total }}.00kz</td>
 
-                    </tr>
-                </tbody>
-            </table>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <table id="total">
+        <tbody>
+            <tr>
+                <td>IVA:</td>
+                <td>{{ $venda->preco_total * 0.14 }}.00kz</td>
+            </tr>
+        </tbody>
+        <thead>
+            <tr>
+                <th>Total com IVA:</th>
+                <td><strong>{{ $totalIva }}.00kz</strong></td>
+            </tr>
+        </thead>
 
+    </table>
 
-            <h3>Processando pelo computador aos <?php echo date('d/m/Y H:i:s'); ?></h3>
+    <h3>Processando pelo computador aos <?php echo date('d/m/Y H:i:s'); ?></h3>
 </body>
 
 </html>

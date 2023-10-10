@@ -3,37 +3,43 @@
 @extends('funcionario.import')
 
 <style>
-     /* Estilos gerais da tabela */
-     .data-table-list {
-            max-width: 100%;
-            overflow-x: auto;
-        }
+    /* Estilos gerais da tabela */
+    .data-table-list {
+        max-width: 100%;
+        overflow-x: auto;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
 
-        td.editable {
-            max-width: 200px; /* Defina a largura máxima desejada */
-            overflow: hidden;
-            text-overflow: ellipsis; /* Adiciona "..." quando o texto é cortado */
-            white-space: nowrap; /* Impede que o texto quebre em várias linhas */
-        }
+    td.editable {
+        max-width: 200px;
+        /* Defina a largura máxima desejada */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* Adiciona "..." quando o texto é cortado */
+        white-space: nowrap;
+        /* Impede que o texto quebre em várias linhas */
+    }
 
-        /* Estilos específicos para telas menores (responsividade) */
-        @media only screen and (max-width: 600px) {
-            th, td {
-                font-size: 12px;
-            }
+    /* Estilos específicos para telas menores (responsividade) */
+    @media only screen and (max-width: 600px) {
+
+        th,
+        td {
+            font-size: 12px;
         }
+    }
 
     h1 {
         text-align: center;
@@ -152,9 +158,9 @@
         /* Efeito hover - ajuste conforme sua preferência */
     }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
-    integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
 <script>
     let itensSelecionados = [];
     let precoTotal = 0;
@@ -245,10 +251,12 @@
             botaoFinalizar.style.display = 'none';
         }
     }
+
     function editarDescricao(index, element) {
-    const novaDescricao = element.innerText;
-    itensSelecionados[index].descricao = novaDescricao;
-}
+        const novaDescricao = element.innerText;
+        itensSelecionados[index].descricao = novaDescricao;
+    }
+
     function calcularPrecoTotal() {
         precoTotal = itensSelecionados.reduce((total, item) => total + (item.preco * item.quantidade), 0);
         const precoTotalElement = document.getElementById('preco-total-valor');
@@ -296,9 +304,7 @@
 
         // Verifica se o valor entregue é igual ao valor total
         if (valorEntregue === precoTotal) {
-            // Exibe uma mensagem indicando o nome do arquivo
-            console.log(`PDF gerado com sucessosss`);
-
+            gerarArquivoTXT(itensSelecionados);
 
         } else if (valorEntregue < precoTotal) {
             const troco = precoTotal - valorEntregue;
@@ -308,11 +314,10 @@
             const troco = valorEntregue - precoTotal;
             document.getElementById('troco').value = troco.toFixed(2);
             alert('Compra finalizada com sucesso!\n O troco é de ' + troco.toFixed(2) + 'kz');
+            gerarArquivoTXT(itensSelecionados);
         }
-
-
-        // Limpa a lista de itens selecionados e atualiza a tabela
-        gerarArquivoTXT(itensSelecionados);
+    }
+    function terminar(){
         itensSelecionados = [];
         atualizarTabelaItens();
         calcularPrecoTotal();
@@ -323,20 +328,6 @@
         fecharModal();
     }
 
-    // Adicione esta função ao seu script
-    function gerarPDF(data) {
-
-        var doc = new jsPDF();
-        doc.text('hello world!', 10, 10);
-
-        // Gere uma URL de dados (data URL) para o PDF
-        var dataURL = doc.output('dataurlstring');
-
-        // Abra uma nova janela com a URL de dados
-        var janela = window.open();
-        janela.document.write('<iframe width="100%" height="100%" src="' + dataURL +
-            '" frameborder="0" allowfullscreen></iframe>');
-    }
 </script>
 <style>
     .acao-button {
@@ -412,7 +403,7 @@
                                 <div class="bootstrap-select fm-cmp-mg">
                                     <div class="form-group">
                                         <div class="nk-int-st">
-                                            <input type="text" name="aaa" id="cliente_nomea" class="form-control"
+                                            <input type="text" name="aaa" id="doc_descricao" class="form-control"
                                                 value="{{ $doc->descricao }}" readonly>
                                         </div>
                                     </div>
@@ -512,8 +503,8 @@
                                     <div class="form-group">
                                         <label>Data e Hora do documento</label>
                                         <div class="nk-int-st">
-                                            <input type="text" name="hora_documento" value="{{now()}}" readonly class="form-control"
-                                                required>
+                                            <input type="text" name="hora_documento" value="{{ now() }}"
+                                                readonly class="form-control" required>
                                         </div>
                                     </div>
                                 </div>
@@ -601,6 +592,37 @@
             @endif
         </div>
     </div>
+
+    <table id="table" hidden>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+                <th>Country</th>
+                <th>IP-address</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Donna</td>
+                <td>Moore</td>
+                <td>dmoore0@furl.net</td>
+                <td>China</td>
+                <td>211.56.242.221</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Janice</td>
+                <td>Henry</td>
+                <td>jhenry1@theatlantic.com</td>
+                <td>Ukraine</td>
+                <td>38.36.7.199</td>
+            </tr>
+        </tbody>
+    </table>
     <!-- Modal HTML -->
     <div id="modalFinalizarCompra" class="modal">
         <div class="modal-content">
@@ -720,7 +742,7 @@
                 .then(data => {
                     fecharModal();
                     alert('Venda finalizada com sucesso!');
-                    gerarPDF(data);
+                    gerarPDF(produtosSelecionados);
                 })
                 .catch(error => {
                     console.error('Erro ao finalizar a compra:', error);
@@ -756,7 +778,6 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     if (codDocumento === "FP") {
                         gerarArquivoTXT(produtos);
                     } else {
@@ -767,6 +788,100 @@
                 .catch(error => {
                     console.error('Erro ao finalizar a compra:', error);
                 });
+        }
+
+        function gerarPDF(data) {
+            var doc = new jspdf.jsPDF();
+            let dataHoraAtual = new Date();
+            let cliente = document.querySelector("#cliente_nome").value;
+            let contribuente = document.querySelector("#contribuente").value;
+            let forma_pagamento = document.querySelector("#forma_pagamento").value;
+            let valor_entregue = document.querySelector("#valor_entregue").value;
+            let troco = document.querySelector("#troco").value;
+            let codDocumento = document.querySelector("#cod_doc").value;
+            let codDescricao = document.querySelector("#doc_descricao").value;
+
+            let ano = dataHoraAtual.getFullYear();
+            let dia = dataHoraAtual.getDate();
+            let mes = dataHoraAtual.getMonth() + 1;
+            let dataformatada = `${dia}/${mes}/${ano}`;
+
+            // Adicione um título e uma descrição do cliente 
+            var title = codDescricao+"   "+codDocumento+ano;
+
+            // Defina a posição e estilo do título
+            doc.setFontSize(16);
+            doc.text(title, 14, 35);
+
+            // Defina a posição e estilo da descrição cliente
+            doc.setFontSize(12);
+            doc.text('Exmo.(s) Sr.(s)', 120, 20);
+            doc.text(cliente, 120, 25);
+
+            const produtos = itensSelecionados.map(item => ({
+                cod_artigo: item.id,
+                nome: item.nome,
+                descricao: item.descricao,
+                quantidade: item.quantidade,
+                preco: item.preco,
+                totalUnidade: (item.preco * item.quantidade)
+            }));
+            const nn = Object.entries(produtos);
+            const matrizBidimensional = produtos.map(objeto => Object.values(objeto));
+            const iva = precoTotal*0.14;
+            // Dados de exemplo
+            var head1 = [
+                ['Data', 'Modo Pagamento', 'Valor Recebido', 'Troco']
+            ];
+            var body1 = [[dataformatada,forma_pagamento,valor_entregue,troco]];
+            var head = [
+                ['Cod.Artigo', 'Artigo', 'Descricao', 'Qtd', 'Pr.Unitário', 'Total']
+            ];
+            var body3 = [[precoTotal.toFixed(2),iva.toFixed(2),(precoTotal+iva).toFixed(2)]];
+            var head3 = [
+                ['Mercadoria/Serviço','IVA','Total(AKZ)']
+            ];
+
+            // Ajuste a posição para a tabela
+            var startY = 40;
+            var startY1 = 80;
+            var startY2 = 60;
+
+            var styles = {
+                fillColor: false, // Sem preenchimento de cor
+                textColor: [0, 0, 0], // Cor do texto preto (RGB)
+                lineWidth: 0.1, // Largura da linha
+            };
+
+            // Gere a tabela no PDF
+            doc.autoTable({
+                head: head1,
+                body: body1,
+                startY: startY,
+                styles: styles, // Adicione a configuração de estilo
+            });
+            doc.autoTable({
+                head: head3,
+                body: body3,
+                startY: startY2,
+                styles: styles, // Adicione a configuração de estilo
+            });
+
+            // Gere a tabela no PDF
+            doc.autoTable({
+                head: head,
+                body: matrizBidimensional,
+                startY: startY1,
+                styles: styles, // Adicione a configuração de estilo
+            });
+            // Obtenha o conteúdo do PDF como uma string de dados
+            var pdfContent = doc.output('dataurlstring');
+
+            // Abra o PDF em uma nova janela do navegador
+            var win = window.open('', '_blank');
+            win.document.write('<iframe width="100%" height="100%" src="' + pdfContent +
+                '" frameborder="0" allowfullscreen></iframe>');
+            terminar();
         }
     </script>
     </div>

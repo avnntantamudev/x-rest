@@ -163,9 +163,10 @@ class FuncionarioController extends Controller
 
         $venda = Vendas::find($id);
         $produtos = Produtos_Venda::where('venda_id',$venda->id)->get();
+        $totalIva = (($venda->preco_total * 0.14) + $venda->preco_total);
          // Recupere os dados dos clientes (ajuste conforme seu modelo)
 
-        $pdf = PDF::loadView('funcionario.vendapdf', compact('venda','produtos'));
+        $pdf = PDF::loadView('funcionario.vendapdf', compact('venda','produtos','totalIva'));
 
         return $pdf->stream('vendas.pdf');
     }
